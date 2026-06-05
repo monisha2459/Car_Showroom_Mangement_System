@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Car Showroom</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="login-page">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="icon">🚗</div>
+      <h1>Car Showroom</h1>
+      <p>Management System</p>
+    </div>
+
+    <form class="login-form" id="loginForm">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Enter username" autocomplete="username">
+        <span class="error-msg" id="usernameErr"></span>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter password" autocomplete="current-password">
+        <span class="error-msg" id="passwordErr"></span>
+      </div>
+      <span class="error-msg" id="loginErr" style="display:block;text-align:center;margin-bottom:8px"></span>
+      <button type="submit" class="btn-login" id="loginBtn">Sign In</button>
+    </form>
+
+    <p class="login-hint">Default: admin / admin123</p>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="app.js"></script>
+  <script>
+    // Redirect if already logged in
+    if (sessionStorage.getItem('admin')) window.location.href = '/dashboard.html';
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const loginErr = document.getElementById('loginErr');
+      loginErr.textContent = '';
+
+      if (!username) { document.getElementById('usernameErr').textContent = 'Required'; return; }
+      if (!password) { document.getElementById('passwordErr').textContent = 'Required'; return; }
+
+      const btn = document.getElementById('loginBtn');
+      btn.textContent = 'Signing in...';
+      btn.disabled = true;
+
+      try {
+        const data = await apiFetch('/admin/login', {
+          method: 'POST',
+          body: JSON.stringify({ username, password })
+        });
+        sessionStorage.setItem('admin', JSON.stringify(data));
+        window.location.href = '/dashboard.html';
+      } catch (err) {
+        loginErr.textContent = err.message;
+        btn.textContent = 'Sign In';
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

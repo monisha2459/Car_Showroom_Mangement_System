@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cars - Car Showroom</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <a href="dashboard.html" class="brand">🚗 <span>Car</span>Showroom</a>
+    <div class="nav-links">
+      <a href="dashboard.html">📊 Dashboard</a>
+      <a href="car.html">🚘 Cars</a>
+      <a href="customer.html">👥 Customers</a>
+      <a href="sales.html">💰 Sales</a>
+    </div>
+    <div class="nav-right">
+      <span class="admin-name" id="admin-name"></span>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="page-wrapper" style="margin-top:88px">
+    <h1 class="page-title">🚘 Car Inventory</h1>
+
+    <div class="card">
+      <div class="toolbar">
+        <div class="search-box">
+          <span>🔍</span>
+          <input type="text" id="searchInput" placeholder="Search by make or model..." oninput="handleSearch()">
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <select class="filter-select" id="statusFilter" onchange="handleSearch()">
+            <option value="">All Status</option>
+            <option value="Available">Available</option>
+            <option value="Sold">Sold</option>
+          </select>
+          <button class="btn btn-primary" onclick="openAddModal()">➕ Add Car</button>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>Image</th><th>Make</th><th>Model</th><th>Year</th><th>Color</th>
+              <th>Price</th><th>Fuel</th><th>Transmission</th><th>Status</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="carTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Modal -->
+  <div class="modal-overlay" id="carModal">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title" id="modalTitle">Add Car</span>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <form id="carForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Make *</label>
+            <input type="text" id="make" placeholder="e.g. Toyota">
+            <span class="error-msg" id="makeErr"></span>
+          </div>
+          <div class="form-group">
+            <label>Model *</label>
+            <input type="text" id="model" placeholder="e.g. Camry">
+            <span class="error-msg" id="modelErr"></span>
+          </div>
+          <div class="form-group">
+            <label>Year *</label>
+            <input type="number" id="year" placeholder="2023" min="1990" max="2030">
+            <span class="error-msg" id="yearErr"></span>
+          </div>
+          <div class="form-group">
+            <label>Color *</label>
+            <input type="text" id="color" placeholder="e.g. White">
+            <span class="error-msg" id="colorErr"></span>
+          </div>
+          <div class="form-group">
+            <label>Price (₹) *</label>
+            <input type="number" id="price" placeholder="750000" min="0">
+            <span class="error-msg" id="priceErr"></span>
+          </div>
+          <div class="form-group">
+            <label>Fuel Type</label>
+            <select id="fuelType">
+              <option value="">Select</option>
+              <option>Petrol</option><option>Diesel</option>
+              <option>Electric</option><option>Hybrid</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Transmission</label>
+            <select id="transmission">
+              <option value="">Select</option>
+              <option>Automatic</option><option>Manual</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Mileage (km)</label>
+            <input type="number" id="mileage" placeholder="0" min="0">
+          </div>
+          <div class="form-group full">
+            <label>Image URL</label>
+            <input type="text" id="imageUrl" placeholder="https://... (optional)" oninput="previewImage()">
+            <img id="imgPreview" src="" alt="" style="display:none;margin-top:8px;width:100%;height:140px;object-fit:cover;border-radius:8px;border:1px solid var(--border)">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveBtn">Save Car</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="app.js"></script>
+  <script>
+    requireAuth();
+    let editingId = null;
+    let allCars = [];
+
+    async function loadCars(search = '', status = '') {
+      try {
+        let url = '/cars';
+        const params = new URLSearchParams();
+        if (search) params.set('search', search);
+        else if (status) params.set('status', status);
+        if (params.toString()) url += '?' + params.toString();
+
+        allCars = await apiFetch(url);
+        renderTable(allCars);
+      } catch (e) {
+        showToast('Failed to load cars', 'error');
+      }
+    }
+
+    function renderTable(cars) {
+      const tbody = document.getElementById('carTableBody');
+      if (cars.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10"><div class="empty-state"><div class="icon">🚗</div><p>No cars found</p></div></td></tr>';
+        return;
+      }
+      tbody.innerHTML = cars.map((c, i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td>${c.imageUrl ? `<img src="${c.imageUrl}" alt="${c.make}" style="width:60px;height:40px;object-fit:cover;border-radius:6px;border:1px solid var(--border)">` : '<span style="color:var(--muted);font-size:0.8rem">No image</span>'}</td>
+          <td><strong>${c.make}</strong></td>
+          <td>${c.model}</td>
+          <td>${c.year}</td>
+          <td>${c.color}</td>
+          <td><strong>${formatINR(c.price)}</strong></td>
+          <td>${c.fuelType || '-'}</td>
+          <td>${c.transmission || '-'}</td>
+          <td><span class="badge badge-${c.status === 'Available' ? 'available' : 'sold'}">${c.status}</span></td>
+          <td>
+            <button class="btn btn-warning btn-sm" onclick="openEditModal(${c.id})">✏️ Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteCar(${c.id})" style="margin-left:4px">🗑️ Delete</button>
+          </td>
+        </tr>`).join('');
+    }
+
+    function handleSearch() {
+      const search = document.getElementById('searchInput').value.trim();
+      const status = document.getElementById('statusFilter').value;
+      loadCars(search, status);
+    }
+
+    function openAddModal() {
+      editingId = null;
+      document.getElementById('modalTitle').textContent = 'Add Car';
+      document.getElementById('carForm').reset();
+      clearErrors();
+      document.getElementById('carModal').classList.add('active');
+    }
+
+    async function openEditModal(id) {
+      try {
+        const car = await apiFetch('/cars/' + id);
+        editingId = id;
+        document.getElementById('modalTitle').textContent = 'Edit Car';
+        document.getElementById('make').value = car.make;
+        document.getElementById('model').value = car.model;
+        document.getElementById('year').value = car.year;
+        document.getElementById('color').value = car.color;
+        document.getElementById('price').value = car.price;
+        document.getElementById('fuelType').value = car.fuelType || '';
+        document.getElementById('transmission').value = car.transmission || '';
+        document.getElementById('mileage').value = car.mileage || 0;
+        document.getElementById('imageUrl').value = car.imageUrl || '';
+        previewImage();
+        clearErrors();
+        document.getElementById('carModal').classList.add('active');
+      } catch (e) {
+        showToast('Failed to load car', 'error');
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('carModal').classList.remove('active');
+    }
+
+    function clearErrors() {
+      ['make','model','year','color','price'].forEach(f => {
+        document.getElementById(f + 'Err').textContent = '';
+        document.getElementById(f).classList.remove('error');
+      });
+    }
+
+    function validateForm() {
+      let valid = true;
+      const fields = [
+        { id: 'make', msg: 'Make is required' },
+        { id: 'model', msg: 'Model is required' },
+        { id: 'year', msg: 'Year is required' },
+        { id: 'color', msg: 'Color is required' },
+        { id: 'price', msg: 'Price is required' },
+      ];
+      fields.forEach(f => {
+        const el = document.getElementById(f.id);
+        if (!el.value.trim()) {
+          document.getElementById(f.id + 'Err').textContent = f.msg;
+          el.classList.add('error');
+          valid = false;
+        }
+      });
+      return valid;
+    }
+
+    document.getElementById('carForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!validateForm()) return;
+
+      const payload = {
+        make: document.getElementById('make').value.trim(),
+        model: document.getElementById('model').value.trim(),
+        year: parseInt(document.getElementById('year').value),
+        color: document.getElementById('color').value.trim(),
+        price: parseFloat(document.getElementById('price').value),
+        fuelType: document.getElementById('fuelType').value,
+        transmission: document.getElementById('transmission').value,
+        mileage: parseInt(document.getElementById('mileage').value) || 0,
+        imageUrl: document.getElementById('imageUrl').value.trim() || null,
+      };
+
+      const btn = document.getElementById('saveBtn');
+      btn.disabled = true; btn.textContent = 'Saving...';
+
+      try {
+        if (editingId) {
+          await apiFetch('/cars/' + editingId, { method: 'PUT', body: JSON.stringify(payload) });
+          showToast('Car updated successfully');
+        } else {
+          await apiFetch('/cars', { method: 'POST', body: JSON.stringify(payload) });
+          showToast('Car added successfully');
+        }
+        closeModal();
+        loadCars();
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        btn.disabled = false; btn.textContent = 'Save Car';
+      }
+    });
+
+    async function deleteCar(id) {
+      if (!confirm('Delete this car?')) return;
+      try {
+        await apiFetch('/cars/' + id, { method: 'DELETE' });
+        showToast('Car deleted');
+        loadCars();
+      } catch (e) {
+        showToast(e.message, 'error');
+      }
+    }
+
+    function previewImage() {
+      const url = document.getElementById('imageUrl').value.trim();
+      const img = document.getElementById('imgPreview');
+      if (url) { img.src = url; img.style.display = 'block'; }
+      else { img.style.display = 'none'; }
+    }
+
+    loadCars();
+  </script>
+</body>
+</html>

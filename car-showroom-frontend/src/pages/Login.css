@@ -1,0 +1,48 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1a1a1a 0%, #cc0000 100%);
+}
+.login-card {
+  background: white;
+  border-radius: 16px;
+  padding: 40px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.login-logo { text-align: center; margin-bottom: 28px; }
+.login-icon { font-size: 3rem; }
+.honda-login-logo { height: 60px; margin-bottom: 8px; }
+.login-logo h1 { font-size: 1.4rem; font-weight: 700; margin-top: 8px; color: #1a1a1a; }
+.login-logo p { color: #cc0000; font-size: 0.88rem; font-style: italic; }
+.form-group { margin-bottom: 18px; display: flex; flex-direction: column; gap: 6px; }
+.form-group label { font-size: 0.85rem; font-weight: 600; color: #1a1a1a; }
+.form-group input {
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.form-group input:focus { border-color: #cc0000; }
+.login-error { color: #cc0000; font-size: 0.85rem; text-align: center; margin-bottom: 10px; }
+.btn-login {
+  width: 100%;
+  padding: 12px;
+  background: #cc0000;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 4px;
+}
+.btn-login:hover:not(:disabled) { background: #aa0000; }
+.btn-login:disabled { opacity: 0.6; cursor: not-allowed; }
+.login-hint { text-align: center; margin-top: 16px; font-size: 0.82rem; color: #64748b; }

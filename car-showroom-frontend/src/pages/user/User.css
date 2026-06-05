@@ -1,0 +1,171 @@
+/* User portal styles */
+.user-bg { background: linear-gradient(135deg, #1a1a1a 0%, #cc0000 100%); }
+
+.user-page { min-height: 100vh; background: #f8f8f8; }
+
+/* Header */
+.user-header {
+  background: #cc0000;
+  color: white;
+  padding: 0 28px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(204,0,0,0.4);
+}
+.user-brand { font-size: 1.2rem; font-weight: 700; color: white; display: flex; align-items: center; gap: 10px; }
+.user-brand img { height: 28px; filter: brightness(0) invert(1); }
+.user-nav { display: flex; align-items: center; gap: 16px; }
+.user-nav-link { color: rgba(255,255,255,0.85); font-size: 0.9rem; text-decoration: none; transition: color 0.2s; }
+.user-nav-link:hover { color: white; }
+.user-welcome { color: rgba(255,255,255,0.85); font-size: 0.9rem; }
+
+/* Hero */
+.user-hero {
+  background: linear-gradient(135deg, #1a1a1a, #cc0000);
+  color: white;
+  text-align: center;
+  padding: 100px 24px 60px;
+}
+.user-hero h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 12px; }
+.user-hero p { font-size: 1.1rem; color: #fca5a5; margin-bottom: 28px; }
+.hero-search { max-width: 500px; margin: 0 auto; }
+.hero-search input {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 50px;
+  border: none;
+  font-size: 1rem;
+  outline: none;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+/* Container */
+.user-container { max-width: 1300px; margin: 0 auto; padding: 32px 24px; }
+
+/* Filters */
+.user-filters { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.filter-label { font-size: 0.9rem; color: #64748b; font-weight: 600; }
+.filter-btn {
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #475569;
+}
+.filter-btn:hover { border-color: #2563eb; color: #2563eb; }
+.filter-btn.active { background: #cc0000; color: white; border-color: #cc0000; }
+
+.results-count { font-size: 0.9rem; color: #64748b; margin-bottom: 20px; }
+
+/* Car Grid */
+.car-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+
+.car-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border: 1px solid #e2e8f0;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.car-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+
+.car-card-img { position: relative; height: 200px; background: #f8fafc; overflow: hidden; }
+.car-card-img img { width: 100%; height: 100%; object-fit: cover; }
+.car-no-img { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 4rem; color: #cbd5e1; }
+.car-badge-available { position: absolute; top: 12px; right: 12px; background: #dcfce7; color: #15803d; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+
+.car-card-body { padding: 18px; }
+.car-card-body h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+.car-year-color { font-size: 0.85rem; color: #64748b; margin-bottom: 12px; }
+
+.car-specs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+.car-specs span { font-size: 0.8rem; background: #f1f5f9; padding: 4px 10px; border-radius: 6px; color: #475569; }
+
+.car-card-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.car-btn-group { display: flex; gap: 6px; }
+
+.btn-buy {
+  background: #1a1a1a;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-buy:hover { background: #cc0000; }
+.car-price { font-size: 1.2rem; font-weight: 700; color: #cc0000; }
+
+.btn-book {
+  background: #cc0000;
+  color: white;
+  border: none;
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-book:hover { background: #aa0000; }
+
+.no-cars { text-align: center; padding: 60px; color: #64748b; font-size: 1rem; grid-column: 1/-1; }
+
+/* Booking info in modal */
+.booking-car-info {
+  display: flex;
+  gap: 16px;
+  background: #f8fafc;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+  color: #475569;
+  flex-wrap: wrap;
+}
+
+/* Booking card */
+.booking-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  border: 1px solid #e2e8f0;
+}
+.booking-car-img { width: 100px; height: 70px; border-radius: 8px; overflow: hidden; flex-shrink: 0; background: #f8fafc; }
+.booking-car-img img { width: 100%; height: 100%; object-fit: cover; }
+.booking-info { flex: 1; }
+.booking-info h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+.booking-info p { font-size: 0.85rem; color: #64748b; margin-bottom: 2px; }
+.booking-status { flex-shrink: 0; }
+.status-badge { padding: 6px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 600; }
+
+/* Shared button styles needed in user pages */
+.btn { padding: 9px 18px; border-radius: 8px; border: none; font-size: 0.9rem; font-weight: 500; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; color: white; cursor: pointer; }
+.btn-success { background: #16a34a; } .btn-success:hover { background: #15803d; }
+.btn-secondary { background: #e2e8f0; color: #1e293b; } .btn-secondary:hover { background: #cbd5e1; }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group label { font-size: 0.85rem; font-weight: 600; }
+.link { color: #2563eb; text-decoration: none; font-weight: 600; }
+.link:hover { text-decoration: underline; }
+
+@media (max-width: 768px) {
+  .user-hero h1 { font-size: 1.8rem; }
+  .car-grid { grid-template-columns: 1fr; }
+  .booking-card { flex-direction: column; align-items: flex-start; }
+}

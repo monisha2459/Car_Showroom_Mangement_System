@@ -1,0 +1,12 @@
+com\showroom\entity\TestDriveBooking.class
+com\showroom\controller\TestDriveController.class
+com\showroom\service\TestDriveService.class
+com\showroom\dto\UserRegisterRequest.class
+com\showroom\controller\UserPurchaseController.class
+com\showroom\dto\TestDriveRequest.class
+com\showroom\controller\UserAccountController.class
+com\showroom\dto\UserPurchaseRequest.class
+com\showroom\service\UserAccountService.class
+com\showroom\entity\UserAccount.class
+com\showroom\repository\UserAccountRepository.class
+com\showroom\repository\TestDriveBookingRepository.class

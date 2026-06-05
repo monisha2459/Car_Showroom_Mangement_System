@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales - Car Showroom</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <a href="dashboard.html" class="brand">🚗 <span>Car</span>Showroom</a>
+    <div class="nav-links">
+      <a href="dashboard.html">📊 Dashboard</a>
+      <a href="car.html">🚘 Cars</a>
+      <a href="customer.html">👥 Customers</a>
+      <a href="sales.html">💰 Sales</a>
+    </div>
+    <div class="nav-right">
+      <span class="admin-name" id="admin-name"></span>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="page-wrapper" style="margin-top:88px">
+    <h1 class="page-title">💰 Sales</h1>
+
+    <div class="card">
+      <div class="toolbar">
+        <span style="color:var(--muted);font-size:0.9rem" id="salesCount">Loading...</span>
+        <button class="btn btn-primary" onclick="openSaleModal()">➕ Record Sale</button>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Car</th><th>Customer</th><th>Sale Price</th><th>Payment</th><th>Date</th></tr>
+          </thead>
+          <tbody id="salesTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sale Modal -->
+  <div class="modal-overlay" id="saleModal">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">Record New Sale</span>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <form id="saleForm">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Car (Available Only) *</label>
+            <select id="carId">
+              <option value="">Select a car...</option>
+            </select>
+            <span class="error-msg" id="carErr"></span>
+          </div>
+          <div class="form-group full">
+            <label>Customer *</label>
+            <select id="customerId">
+              <option value="">Select a customer...</option>
+            </select>
+            <span class="error-msg" id="customerErr"></span>
+          </div>
+          <div class="form-group">
+            <label>Sale Price (₹) *</label>
+            <input type="number" id="salePrice" placeholder="750000" min="0">
+            <span class="error-msg" id="priceErr"></span>
+          </div>
+          <div class="form-group">
+            <label>Payment Method</label>
+            <select id="paymentMethod">
+              <option value="">Select</option>
+              <option>Cash</option>
+              <option>Credit Card</option>
+              <option>Finance</option>
+              <option>Bank Transfer</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-success" id="saveBtn">✅ Confirm Sale</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="app.js"></script>
+  <script>
+    requireAuth();
+
+    async function loadSales() {
+      try {
+        const sales = await apiFetch('/sales');
+        document.getElementById('salesCount').textContent = `${sales.length} total sale(s)`;
+        const tbody = document.getElementById('salesTableBody');
+        if (sales.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon">💰</div><p>No sales recorded yet</p></div></td></tr>';
+          return;
+        }
+        tbody.innerHTML = [...sales].reverse().map((s, i) => `
+          <tr>
+            <td>${sales.length - i}</td>
+            <td><strong>${s.car.make} ${s.car.model}</strong> (${s.car.year})</td>
+            <td>${s.customer.name}</td>
+            <td><strong style="color:var(--success)">${formatINR(s.salePrice)}</strong></td>
+            <td>${s.paymentMethod || '-'}</td>
+            <td>${s.saleDate}</td>
+          </tr>`).join('');
+      } catch (e) {
+        showToast('Failed to load sales', 'error');
+      }
+    }
+
+    async function openSaleModal() {
+      // Load available cars
+      try {
+        const cars = await apiFetch('/cars?status=Available');
+        const carSel = document.getElementById('carId');
+        carSel.innerHTML = '<option value="">Select a car...</option>';
+        cars.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = `${c.make} ${c.model} (${c.year}) - ${formatINR(c.price)}`;
+          carSel.appendChild(opt);
+        });
+      } catch (e) { showToast('Failed to load cars', 'error'); return; }
+
+      // Load customers
+      try {
+        const customers = await apiFetch('/customers');
+        const custSel = document.getElementById('customerId');
+        custSel.innerHTML = '<option value="">Select a customer...</option>';
+        customers.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = `${c.name}${c.phone ? ' - ' + c.phone : ''}`;
+          custSel.appendChild(opt);
+        });
+      } catch (e) { showToast('Failed to load customers', 'error'); return; }
+
+      document.getElementById('saleForm').reset();
+      document.getElementById('carErr').textContent = '';
+      document.getElementById('customerErr').textContent = '';
+      document.getElementById('priceErr').textContent = '';
+      document.getElementById('saleModal').classList.add('active');
+    }
+
+    // Auto-fill price when car is selected
+    document.getElementById('carId').addEventListener('change', async function() {
+      if (!this.value) return;
+      try {
+        const car = await apiFetch('/cars/' + this.value);
+        document.getElementById('salePrice').value = car.price;
+      } catch (e) { /* ignore */ }
+    });
+
+    function closeModal() {
+      document.getElementById('saleModal').classList.remove('active');
+    }
+
+    document.getElementById('saleForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const carId = document.getElementById('carId').value;
+      const customerId = document.getElementById('customerId').value;
+      const salePrice = document.getElementById('salePrice').value;
+
+      document.getElementById('carErr').textContent = '';
+      document.getElementById('customerErr').textContent = '';
+      document.getElementById('priceErr').textContent = '';
+
+      let valid = true;
+      if (!carId) { document.getElementById('carErr').textContent = 'Select a car'; valid = false; }
+      if (!customerId) { document.getElementById('customerErr').textContent = 'Select a customer'; valid = false; }
+      if (!salePrice || salePrice <= 0) { document.getElementById('priceErr').textContent = 'Enter valid price'; valid = false; }
+      if (!valid) return;
+
+      const btn = document.getElementById('saveBtn');
+      btn.disabled = true; btn.textContent = 'Processing...';
+
+      try {
+        await apiFetch('/sales', {
+          method: 'POST',
+          body: JSON.stringify({
+            carId: parseInt(carId),
+            customerId: parseInt(customerId),
+            salePrice: parseFloat(salePrice),
+            paymentMethod: document.getElementById('paymentMethod').value || null,
+          })
+        });
+        showToast('Sale recorded successfully');
+        closeModal();
+        loadSales();
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        btn.disabled = false; btn.textContent = '✅ Confirm Sale';
+      }
+    });
+
+    loadSales();
+  </script>
+</body>
+</html>

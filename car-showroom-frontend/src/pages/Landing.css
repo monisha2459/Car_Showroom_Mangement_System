@@ -1,0 +1,127 @@
+.landing-page {
+  min-height: 100vh;
+  background: linear-gradient(160deg, #1a1a1a 0%, #cc0000 60%, #990000 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  color: white;
+}
+
+.landing-header {
+  position: absolute;
+  top: 24px;
+  left: 40px;
+}
+.honda-logo {
+  height: 50px;
+  filter: brightness(0) invert(1);
+}
+
+.landing-hero {
+  text-align: center;
+  margin-bottom: 48px;
+}
+.landing-hero h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+.landing-hero p {
+  font-size: 1.2rem;
+  color: #fca5a5;
+  margin-top: 8px;
+  font-style: italic;
+}
+.honda-tagline {
+  display: inline-block;
+  margin-top: 14px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 6px 20px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: #fde68a;
+}
+
+.landing-cards {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.role-card {
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 20px;
+  padding: 40px 36px;
+  width: 280px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.25s, background 0.25s, box-shadow 0.25s;
+}
+.role-card:hover {
+  transform: translateY(-6px);
+  background: rgba(255,255,255,0.15);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+.role-icon { font-size: 3rem; margin-bottom: 16px; }
+.role-card h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 10px; }
+.role-card p { font-size: 0.88rem; color: #fecaca; line-height: 1.5; margin-bottom: 24px; }
+
+.role-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.role-btn:hover { opacity: 0.9; }
+.admin-btn { background: #1a1a1a; color: white; }
+.user-btn { background: white; color: #cc0000; }
+
+.role-divider {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fca5a5;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.honda-models {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+.honda-models span {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 5px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  color: #fecaca;
+}
+
+.landing-footer { font-size: 0.8rem; color: #9ca3af; }
+
+@media (max-width: 640px) {
+  .landing-hero h1 { font-size: 2rem; }
+  .role-card { width: 100%; max-width: 320px; }
+}
